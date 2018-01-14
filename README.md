@@ -73,7 +73,7 @@ $ cd cloudflair
 $ pip install -r requirements.txt
 ```
 
-5) Run CloudFlair (see [Usage](#Usage) below for more detail)
+5) Run CloudFlair (see [Usage](#usage) below for more detail)
 
 ```
 $ python cloudflair.py myvulnerable.site
