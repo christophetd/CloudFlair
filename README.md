@@ -4,7 +4,7 @@ CloudFlair is a tool to help find the origin servers of websites protected by Cl
 
 The tool uses Internet-wide scan data from [Censys](https://censys.io) to find exposed IPv4 hosts presenting a SSL certificate associated to the target's domain name.
 
-For more detail, refer to the companion blog post at **TODO**.
+For more detail about this vulnerability and how CloudFlair works, refer to the companion blog post at **TODO**.
 
 Here's what CloudFlair looks like in action.
 
