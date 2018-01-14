@@ -6,7 +6,7 @@ The tool uses Internet-wide scan data from [Censys](https://censys.io) to find e
 
 For more detail, refer to the companion blog post at **TODO**.
 
-Here's what it looks like in action.
+Here's what CloudFlair looks like in action.
 
 ```
 $ python cloudflair.py myvulnerable.site
