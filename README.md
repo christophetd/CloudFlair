@@ -7,8 +7,6 @@ For more detail, see the companion blogpost at **TODO**.
 Here's what it looks like in action.
 
 ```
-# The IPs shown below are fictive
-
 $ python cloudflair.py myvulnerable.site
 
 [*] The target appears to be behind CloudFlare.
@@ -47,6 +45,8 @@ $ python cloudflair.py myvulnerable.site
   - 177.67.208.72 (HTML content identical to myvulnerable.site)
   - 182.102.141.194 (HTML content identical to myvulnerable.site)
 ```
+
+(_The IP addresses in this example have been obfuscated and replaced by randomly generated IPs_)
 
 ## Setup
 
