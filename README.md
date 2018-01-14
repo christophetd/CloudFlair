@@ -1,7 +1,8 @@
 # CloudFlair
 
-CloudFlair is a tool to help find the origin servers of websites protected by CloudFlare who don't restrict network access to CloudFlare IPs only.
-CloudFlair searches [Censys](https://censys.io) for IPv4 hosts presenting a SSL certificate associated to the target's domain name.
+CloudFlair is a tool to help find the origin servers of websites protected by CloudFlare who don't restrict network access to the CloudFlare IPs ranges.
+
+The tool uses Internet-wide scan data from [Censys](https://censys.io) to find exposed IPv4 hosts presenting a SSL certificate associated to the target's domain name.
 
 For more detail, see the companion blogpost at **TODO**.
 
