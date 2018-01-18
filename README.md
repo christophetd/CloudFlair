@@ -53,7 +53,7 @@ $ python cloudflair.py myvulnerable.site
 ## Setup
 
 1) Register an account (free) on https://censys.io/register
-2) Browse to https://censys.io/account, and set two environment variables with your API ID and API secret
+2) Browse to https://censys.io/account/api, and set two environment variables with your API ID and API secret
 
 ```
 $ export CENSYS_API_ID=...
