@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import ipaddress
-import dns
+from dns import resolver
 import sys
 
 #  TODO: fetch it from https://www.cloudflare.com/ips-v4 instead
@@ -34,7 +34,7 @@ def is_cloudflare_ip(ip):
     return False
 
 def uses_cloudflare(domain):
-    answers = dns.resolver.query(domain, 'A')
+    answers = resolver.query(domain, 'A')
 
     for answer in answers:
         if is_cloudflare_ip(answer):
