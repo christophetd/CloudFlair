@@ -104,6 +104,19 @@ optional arguments:
                         CENSYS_API_SECRET environment variable (default: None)
 ```
 
+## Docker image
+
+A Docker image is available under the name [`christophetd/cloudflair`](https://hub.docker.com/u/christophetd/cloudflair).
+A scan can be easily instantiated by running the following command:
+
+```
+$ docker run -e CENSYS_API_ID=your-id -e CENSYS_API_SECRET=your-secret --rm christophetd/cloudflair test.com 
+```
+
+If you do not want to make your Censys API credentials appear in process' command line parameters, you can also create
+a file containing one environment variable per line and tell Docker to load it using `--env-file yourfile`, instead 
+of using both `-e` flags.
+
 ## Compatibility
 
 Tested on Python 2.7 and 3.5. Feel free to [open an issue](https://github.com/christophetd/cloudflair/issues/new) if you have bug reports or questions.
