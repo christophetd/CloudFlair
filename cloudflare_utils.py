@@ -28,13 +28,13 @@ def get_cloudflare_ip_ranges():
     ]
 
     try:
-        print('[*] Retrieving Cloudflare IP ranges from https://www.cloudflare.com/ips-v4')
+        print('[*] Retrieving Cloudflare IP ranges from {}'.format(cloudflare_ip_ranges_url))
         page_content = requests.get(cloudflare_ip_ranges_url, timeout=10)
         ip_ranges_text = page_content.text
         ip_ranges = [ip for ip in ip_ranges_text.split("\n") if ip]
 
     except requests.exceptions.RequestException:
-        sys.stderr.write('Failed to retrieve Cloudflare IP ranges - using a default (possibly outdated) list')
+        sys.stderr.write('[-] Failed to retrieve Cloudflare IP ranges - using a default (possibly outdated) list\n')
         ip_ranges = ip_ranges_fallback
 
     finally:
