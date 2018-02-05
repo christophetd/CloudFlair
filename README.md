@@ -104,6 +104,24 @@ optional arguments:
                         CENSYS_API_SECRET environment variable (default: None)
 ```
 
+## Docker image
+
+A Docker image of CloudFlair ([`christophetd/cloudflair`](https://hub.docker.com/r/christophetd/cloudflair/)) is provided. A scan can easily be instantiated using the following command.
+
+```
+$ docker run --rm -e CENSYS_API_ID=your-id -e CENSYS_API_SECRET=your-secret christophetd/cloudflair myvulnerable.site 
+```
+
+You can also create a file containing the definition of the environment variables, and use the Docker`--env-file` option.
+
+```
+$ cat censys.env 
+CENSYS_API_ID=your-id
+CENSYS_API_SECRET=your-secret
+
+$ docker run --rm --env-file=censys.env christophetd/cloudflair myvulnerable.site
+```
+
 ## Compatibility
 
 Tested on Python 2.7 and 3.5. Feel free to [open an issue](https://github.com/christophetd/cloudflair/issues/new) if you have bug reports or questions.
