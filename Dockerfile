@@ -11,5 +11,5 @@ RUN apk add --no-cache --virtual persistent python3 libxslt libxml2 && \
     rm -rf /root/.cache && \
     apk del --virtual build-deps
 
-ENTRYPOINT ["/usr/bin/python3", "/data/cloudflair.py"]
+ENTRYPOINT ["/usr/bin/python3", "-u", "/data/cloudflair.py"]
 CMD ["--help"]
