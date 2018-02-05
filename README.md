@@ -106,16 +106,21 @@ optional arguments:
 
 ## Docker image
 
-A Docker image is available under the name [`christophetd/cloudflair`](https://hub.docker.com/u/christophetd/cloudflair).
-A scan can be easily instantiated by running the following command:
+A Docker image of CloudFlair ([`christophetd/cloudflair`](https://hub.docker.com/r/christophetd/cloudflair/)) is provided. A scan can easily be instantiated using the following command.
 
 ```
-$ docker run -e CENSYS_API_ID=your-id -e CENSYS_API_SECRET=your-secret --rm christophetd/cloudflair test.com 
+$ docker run --rm -e CENSYS_API_ID=your-id -e CENSYS_API_SECRET=your-secret christophetd/cloudflair myvulnerable.site 
 ```
 
-If you do not want to make your Censys API credentials appear in process' command line parameters, you can also create
-a file containing one environment variable per line and tell Docker to load it using `--env-file yourfile`, instead 
-of using both `-e` flags.
+You can also create a file containing the definition of the environment variables, and use the Docker`--env-file` option.
+
+```
+$ cat censys.env 
+CENSYS_API_ID=your-id
+CENSYS_API_SECRET=your-secret
+
+$ docker run --rm --env-file=censys.env christophetd/cloudflair myvulnerable.site
+```
 
 ## Compatibility
 
