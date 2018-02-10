@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import censys.certificates
 import censys.ipv4
 import censys

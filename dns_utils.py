@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import dns.resolver
 
 def is_valid_domain(domain):

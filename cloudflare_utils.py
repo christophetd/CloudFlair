@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import dns
 import ipaddress
 import sys
