@@ -10,7 +10,7 @@ import urllib3
 from html_similarity import similarity
 import cli
 
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+requests.packages.urllib3.disable_warnings()
 
 config = {
     'http_timeout_seconds': 3,
