@@ -106,7 +106,9 @@ optional arguments:
 
 ## Docker image
 
-A Docker image of CloudFlair ([`christophetd/cloudflair`](https://hub.docker.com/r/christophetd/cloudflair/)) is provided. A scan can easily be instantiated using the following command.
+[![](https://images.microbadger.com/badges/image/christophetd/cloudflair.svg)](https://microbadger.com/images/christophetd/cloudflair "Get your own image badge on microbadger.com")
+
+A lightweight Docker image of CloudFlair ([`christophetd/cloudflair`](https://hub.docker.com/r/christophetd/cloudflair/)) is provided. A scan can easily be instantiated using the following command.
 
 ```
 $ docker run --rm -e CENSYS_API_ID=your-id -e CENSYS_API_SECRET=your-secret christophetd/cloudflair myvulnerable.site 
