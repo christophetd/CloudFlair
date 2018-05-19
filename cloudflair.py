@@ -60,7 +60,7 @@ def retrieve_original_page(domain):
     "Connection":"close","Accept-Language":"fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3","Accept-Encoding":"gzip, deflate"}
     print('[*] Retrieving target homepage at %s' % url)
     try:
-        original_response = requests.get(url, timeout=config['http_timeout_seconds'], headers=headers)
+        original_response = requests.get(url, timeout=config['http_timeout_seconds'], headers=headers, verify=False)
     except requests.exceptions.Timeout:
         sys.stderr.write('[-] %s timed out after %d seconds.\n' % (url, config['http_timeout_seconds']))
         exit(1)
