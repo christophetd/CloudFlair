@@ -55,9 +55,12 @@ def print_hosts(hosts):
 
 def retrieve_original_page(domain):
     url = 'https://' + domain
+    headers = {"Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Upgrade-Insecure-Requests":"1","User-Agent":"Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/60.0",
+    "Connection":"close","Accept-Language":"fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3","Accept-Encoding":"gzip, deflate"}
     print('[*] Retrieving target homepage at %s' % url)
     try:
-        original_response = requests.get(url, timeout=config['http_timeout_seconds'])
+        original_response = requests.get(url, timeout=config['http_timeout_seconds'], headers=headers, verify=False)
     except requests.exceptions.Timeout:
         sys.stderr.write('[-] %s timed out after %d seconds.\n' % (url, config['http_timeout_seconds']))
         exit(1)
@@ -107,6 +110,9 @@ def find_origins(domain, candidates):
             url = 'https://' + host
             headers = {
                 'Host': host_header_value # only keep the TLD, without any slashes
+                ,"Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Upgrade-Insecure-Requests":"1","User-Agent":"Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/60.0",
+                "Connection":"close","Accept-Language":"fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3","Accept-Encoding":"gzip, deflate"
             }
             response = requests.get(url, timeout=config['http_timeout_seconds'], headers=headers, verify=False)
         except requests.exceptions.Timeout:
