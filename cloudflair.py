@@ -125,7 +125,11 @@ def find_origins(domain, candidates):
             continue
 
         if len(response.text) > 0:
-            page_similarity = similarity(response.text, original_response.text)
+            try:
+                page_similarity = similarity(response.text, original_response.text)
+            except:
+                page_similarity = 0
+
             if page_similarity > config['response_similarity_threshold']:
                 origins.append((host, 'HTML content is %d %% structurally similar to %s' % (round(100 *page_similarity, 2), domain)))
 
