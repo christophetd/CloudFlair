@@ -9,6 +9,7 @@ import requests
 import urllib3
 from html_similarity import similarity
 import cli
+import random
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -16,6 +17,16 @@ config = {
     'http_timeout_seconds': 3,
     'response_similarity_threshold': 0.9
 }
+
+# Returns a legitimate looking user-agent
+def get_user_agent():
+    user_agents = [
+        "Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101 Firefox/68.0",
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36"
+    ]
+    
+    return random.choice(user_agents)
 
 def find_hosts(domain, censys_api_id, censys_api_secret):
     if not dns_utils.is_valid_domain(domain):
@@ -57,7 +68,8 @@ def retrieve_original_page(domain):
     url = 'https://' + domain
     print('[*] Retrieving target homepage at %s' % url)
     try:
-        original_response = requests.get(url, timeout=config['http_timeout_seconds'])
+        headers = {'User-Agent': get_user_agent()}
+        original_response = requests.get(url, timeout=config['http_timeout_seconds'], headers=headers)
     except requests.exceptions.Timeout:
         sys.stderr.write('[-] %s timed out after %d seconds.\n' % (url, config['http_timeout_seconds']))
         exit(1)
@@ -106,7 +118,8 @@ def find_origins(domain, candidates):
             print('  - %s' % host)
             url = 'https://' + host
             headers = {
-                'Host': host_header_value # only keep the TLD, without any slashes
+                'Host': host_header_value, # only keep the TLD, without any slashes
+                'User-Agent': get_user_agent()
             }
             response = requests.get(url, timeout=config['http_timeout_seconds'], headers=headers, verify=False)
         except requests.exceptions.Timeout:
