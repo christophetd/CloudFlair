@@ -49,6 +49,7 @@ def find_hosts(domain, censys_api_id, censys_api_secret):
 
     return set(hosts)
 
+
 def print_hosts(hosts):
     for host in hosts:
         print('  - %s' % host)
@@ -77,11 +78,13 @@ def retrieve_original_page(domain):
 
     return original_response
 
+
 def print_origins(origins):
     for origin in origins:
         print('  - %s (%s)' % (origin[0], origin[1]))
 
     print('')
+
 
 def save_origins_to_file(origins, output_file):
     if output_file is None:
@@ -95,9 +98,11 @@ def save_origins_to_file(origins, output_file):
     except IOError as e:
         sys.stderr.write('[-] Unable to write to output file %s : %s\n' % (output_file, e))
 
+
 # Removes any Cloudflare IPs from the given list
 def filter_cloudflare_ips(ips):
     return [ ip for ip in ips if not cloudflare_utils.is_cloudflare_ip(ip) ]
+
 
 def find_origins(domain, candidates):
     print('\n[*] Testing candidate origin servers')
@@ -154,6 +159,7 @@ def main(domain, output_file, censys_api_id, censys_api_secret):
     print_origins(origins)
     save_origins_to_file(origins, output_file)
 
+
 if __name__ == "__main__":
     args = cli.parser.parse_args()
 
@@ -168,8 +174,9 @@ if __name__ == "__main__":
         censys_api_id = args.censys_api_id
         censys_api_secret = args.censys_api_secret
 
-    if None in [ censys_api_id, censys_api_secret ]:
-        sys.stderr.write('[!] Please set your Censys API ID and secret from your environment (CENSYS_API_ID and CENSYS_API_SECRET) or from the command line.\n')
+    if None in [censys_api_id, censys_api_secret]:
+        sys.stderr.write('[!] Please set your Censys API ID and secret from your environment '
+                         '(CENSYS_API_ID and CENSYS_API_SECRET) or from the command line.\n')
         exit(1)
 
     main(args.domain, args.output_file, censys_api_id, censys_api_secret)
