@@ -42,7 +42,7 @@ def find_hosts(domain, censys_api_id, censys_api_secret):
 
     logging.info('Looking for IPv4 hosts presenting these certificates...')
     hosts = censys_search.get_hosts(cert_fingerprints, censys_api_id, censys_api_secret)
-    hosts = filter_cloudflare_ips(hosts)
+    hosts = cloudflare_utils.filter_cloudflare_ips(hosts)
     logging.info(f'{len(hosts)} IPv4 hosts presenting a certificate issued to "{domain}" were found.')
 
     if len(hosts) is 0:
@@ -100,12 +100,6 @@ def save_origins_to_file(origins, output_file):
         logging.info(f'Wrote {len(origins)} likely origins to output file {os.path.abspath(output_file)}')
     except IOError as e:
         logging.error(f'Unable to write to output file {output_file}: {e}')
-
-
-# Removes any Cloudflare IPs from the given list
-def filter_cloudflare_ips(ips):
-    return [ ip for ip in ips if not cloudflare_utils.is_cloudflare_ip(ip) ]
-
 
 def find_origins(domain, candidates):
     logging.info('Testing candidate origin servers')

@@ -62,3 +62,8 @@ def uses_cloudflare(domain):
             return True
 
     return False
+
+
+# Removes any Cloudflare IPs from the given list
+def filter_cloudflare_ips(ips):
+    return [ ip for ip in ips if not cloudflare_utils.is_cloudflare_ip(ip) ]
