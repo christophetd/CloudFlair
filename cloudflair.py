@@ -10,8 +10,10 @@ import urllib3
 from html_similarity import similarity
 import cli
 import utils
+import logging
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)
 
 config = {
     'http_timeout_seconds': 3,
@@ -21,30 +23,30 @@ config = {
 
 def find_hosts(domain, censys_api_id, censys_api_secret):
     if not dns_utils.is_valid_domain(domain):
-        sys.stderr.write('[-] The domain "%s" looks invalid.\n' % domain)
+        logging.critical(f'The domain "{domain}" looks invalid.')
         exit(1)
 
     if not cloudflare_utils.uses_cloudflare(domain):
-        print('[-] The domain "%s" does not seem to be behind CloudFlare.' % domain)
+        logging.critical(f'The domain "{domain}" does not seem to be behind CloudFlare.')
         exit(0)
 
-    print('[*] The target appears to be behind CloudFlare.')
+    logging.info('The target appears to be behind CloudFlare.')
 
-    print('[*] Looking for certificates matching "%s" using Censys' % domain)
+    logging.info('Looking for certificates matching "%s" using Censys' % domain)
     cert_fingerprints = censys_search.get_certificates(domain, censys_api_id, censys_api_secret)
-    print('[*] %d certificates matching "%s" found.' % (len(cert_fingerprints), domain) )
+    logging.info(f'{len(cert_fingerprints)} certificates matching "{domain}" found.')
 
     if len(cert_fingerprints) is 0:
-        print('Exiting.')
+        logging.info('Exiting.')
         exit(0)
 
-    print('[*] Looking for IPv4 hosts presenting these certificates...')
+    logging.info('Looking for IPv4 hosts presenting these certificates...')
     hosts = censys_search.get_hosts(cert_fingerprints, censys_api_id, censys_api_secret)
     hosts = filter_cloudflare_ips(hosts)
-    print('[*] %d IPv4 hosts presenting a certificate issued to "%s" were found.' % (len(hosts), domain))
+    logging.info(f'{len(hosts)} IPv4 hosts presenting a certificate issued to "{domain}" were found.')
 
     if len(hosts) is 0:
-        print('[-] The target is most likely not vulnerable.')
+        logging.info('The target is most likely not vulnerable.')
         exit(0)
 
     return set(hosts)
@@ -58,23 +60,24 @@ def print_hosts(hosts):
 
 def retrieve_original_page(domain):
     url = 'https://' + domain
-    print('[*] Retrieving target homepage at %s' % url)
+    logging.info(f'Retrieving target homepage at {url}')
     try:
         headers = {'User-Agent': utils.get_user_agent()}
         original_response = requests.get(url, timeout=config['http_timeout_seconds'], headers=headers)
     except requests.exceptions.Timeout:
-        sys.stderr.write('[-] %s timed out after %d seconds.\n' % (url, config['http_timeout_seconds']))
+        logging.critical(f'{url} timed out after {config["http_timeout_seconds"]} seconds.')
         exit(1)
     except requests.exceptions.RequestException as e:
-        sys.stderr.write('[-] Failed to retrieve %s\n' % url)
+        logging.critical('Failed to retrieve %s' % url)
         exit(1)
 
-    if original_response.status_code != 200:
-        print('[-] %s responded with an unexpected HTTP status code %d' % (url, original_response.status_code))
+    status_code = original_response.status_code
+    if status_code != 200:
+        logging.critical(f'{url} responded with an unexpected HTTP status code {status_code}')
         exit(1)
 
     if original_response.url != url:
-        print('[*] "%s" redirected to "%s"' % (url, original_response.url))
+        logging.info(f'"{url}" redirected to "{original_response.url}", following redirect')
 
     return original_response
 
@@ -94,9 +97,9 @@ def save_origins_to_file(origins, output_file):
         with open(output_file, 'w') as f:
             for origin in origins:
                 f.write(origin[0] + '\n')
-        print('[*] Wrote %d likely origins to output file %s' % (len(origins), os.path.abspath(output_file)))
+        logging.info(f'Wrote {len(origins)} likely origins to output file {os.path.abspath(output_file)}')
     except IOError as e:
-        sys.stderr.write('[-] Unable to write to output file %s : %s\n' % (output_file, e))
+        logging.error(f'Unable to write to output file {output_file}: {e}')
 
 
 # Removes any Cloudflare IPs from the given list
@@ -105,7 +108,7 @@ def filter_cloudflare_ips(ips):
 
 
 def find_origins(domain, candidates):
-    print('\n[*] Testing candidate origin servers')
+    logging.info('Testing candidate origin servers')
     original_response = retrieve_original_page(domain)
     host_header_value = original_response.url.replace('https://', '').split('/')[0]
     origins = []
@@ -151,11 +154,10 @@ def main(domain, output_file, censys_api_id, censys_api_secret):
     origins = find_origins(domain, hosts)
 
     if len(origins) is 0:
-        print('[-] Did not find any origin server.')
+        logging.info('Did not find any origin server.')
         exit(0)
 
-    print('')
-    print('[*] Found %d likely origin servers of %s!' % (len(origins), domain))
+    logging.info(f'\nFound {len(origins)} likely origin servers of {domain}!')
     print_origins(origins)
     save_origins_to_file(origins, output_file)
 
@@ -175,8 +177,8 @@ if __name__ == "__main__":
         censys_api_secret = args.censys_api_secret
 
     if None in [censys_api_id, censys_api_secret]:
-        sys.stderr.write('[!] Please set your Censys API ID and secret from your environment '
-                         '(CENSYS_API_ID and CENSYS_API_SECRET) or from the command line.\n')
+        logging.critical('[!] Please set your Censys API ID and secret from your environment '
+                         '(CENSYS_API_ID and CENSYS_API_SECRET) or from the command line.')
         exit(1)
 
     main(args.domain, args.output_file, censys_api_id, censys_api_secret)
