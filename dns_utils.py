@@ -1,5 +1,6 @@
 import dns.resolver
 
+
 def is_valid_domain(domain):
     try:
         dns.resolver.query(domain, 'A')

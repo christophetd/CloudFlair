@@ -124,6 +124,14 @@ CENSYS_API_SECRET=your-secret
 $ docker run --rm --env-file=censys.env christophetd/cloudflair myvulnerable.site
 ```
 
+## Unit tests
+
+To run the tests, use:
+
+```
+$ make test
+```
+
 ## Compatibility
 
-Tested on Python 2.7 and 3.5. Feel free to [open an issue](https://github.com/christophetd/cloudflair/issues/new) if you have bug reports or questions.
+Python 3.x. Feel free to [open an issue](https://github.com/christophetd/cloudflair/issues/new) if you have bug reports or questions.
