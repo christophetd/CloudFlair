@@ -7,8 +7,7 @@ RUN apk add --no-cache --virtual persistent python3 libxslt libxml2 && \
     mkdir /data && \
     cd /data && \
     git clone --depth=1 https://github.com/christophetd/CloudFlair.git . && \
-    pip3 install -r requirements.txt && \
-    rm -rf /root/.cache && \
+    pip3 install --no-cache-dir --requirement requirements.txt && \
     apk del --virtual build-deps
 
 ENTRYPOINT ["/usr/bin/python3", "-u", "/data/cloudflair.py"]
