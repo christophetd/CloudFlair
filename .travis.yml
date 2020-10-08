@@ -2,9 +2,14 @@ language: python
 python: 
   - "2.7"
   - "3.5"
-sudo: required
 services:
   - docker
+jobs:
+  matrix:
+    include:
+      - install: skip
+        script:
+        - docker run --rm -e CENSYS_API_ID="$CENSYS_API_ID" -e CENSYS_API_SECRET="$CENSYS_API_SECRET" christophetd/cloudflair myvulnerable.site
 install: 
   - pip install -r requirements.txt
 script:
