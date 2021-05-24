@@ -2,13 +2,13 @@
 
 CloudFlair is a tool to find origin servers of websites protected by CloudFlare who are publicly exposed and don't restrict network access to the CloudFlare IP ranges as they should.
 
-The tool uses Internet-wide scan data from [Censys](https://censys.io) to find exposed IPv4 hosts presenting an SSL certificate associated with the target's domain name.
+The tool uses Internet-wide scan data from [Censys](https://censys.io) to find exposed IPv4 hosts presenting an SSL certificate associated with the target's domain name. API keys are required and can be retrieved from your [Censys account](https://search.censys.io/account/api).
 
-For more detail about this common misconfiguration and how CloudFlair works, refer to the companion blog post at https://blog.christophetd.fr/bypassing-cloudflare-using-internet-wide-scan-data/.
+For more detail about this common misconfiguration and how CloudFlair works, refer to the companion blog post at <https://blog.christophetd.fr/bypassing-cloudflare-using-internet-wide-scan-data/>.
 
 Here's what CloudFlair looks like in action.
 
-```
+```bash
 $ python cloudflair.py myvulnerable.site
 
 [*] The target appears to be behind CloudFlare.
@@ -52,36 +52,36 @@ $ python cloudflair.py myvulnerable.site
 
 ## Setup
 
-1) Register an account (free) on https://censys.io/register
-2) Browse to https://censys.io/account/api, and set two environment variables with your API ID and API secret
+1. Register an account (free) on <https://search.censys.io/register>
+2. Browse to <https://search.censys.io/account/api>, and set two environment variables with your API ID and API secret
 
-```
+```bash
 $ export CENSYS_API_ID=...
 $ export CENSYS_API_SECRET=...
 ```
 
-3) Clone the repository
+3. Clone the repository
 
-```
+```bash
 $ git clone https://github.com/christophetd/cloudflair.git
 ```
 
-4) Install the dependencies
+4. Install the dependencies
 
-```
+```bash
 $ cd cloudflair
 $ pip install -r requirements.txt
 ```
 
-5) Run CloudFlair (see [Usage](#usage) below for more detail)
+5. Run CloudFlair (see [Usage](#usage) below for more detail)
 
-```
+```bash
 $ python cloudflair.py myvulnerable.site
 ```
 
 ## Usage
 
-```
+```bash
 $ python cloudflair.py --help
 
 usage: cloudflair.py [-h] [-o OUTPUT_FILE] [--censys-api-id CENSYS_API_ID]
@@ -106,18 +106,19 @@ optional arguments:
 
 ## Docker image
 
-[![](https://images.microbadger.com/badges/image/christophetd/cloudflair.svg)](https://microbadger.com/images/christophetd/cloudflair "Get your own image badge on microbadger.com")
+![MicroBadger Size](https://img.shields.io/microbadger/image-size/christophetd/cloudflair)
+![MicroBadger Layers](https://img.shields.io/microbadger/layers/christophetd/cloudflair)
 
 A lightweight Docker image of CloudFlair ([`christophetd/cloudflair`](https://hub.docker.com/r/christophetd/cloudflair/)) is provided. A scan can easily be instantiated using the following command.
 
-```
-$ docker run --rm -e CENSYS_API_ID=your-id -e CENSYS_API_SECRET=your-secret christophetd/cloudflair myvulnerable.site 
+```bash
+$ docker run --rm -e CENSYS_API_ID=your-id -e CENSYS_API_SECRET=your-secret christophetd/cloudflair myvulnerable.site
 ```
 
 You can also create a file containing the definition of the environment variables, and use the Docker`--env-file` option.
 
-```
-$ cat censys.env 
+```bash
+$ cat censys.env
 CENSYS_API_ID=your-id
 CENSYS_API_SECRET=your-secret
 
@@ -126,4 +127,4 @@ $ docker run --rm --env-file=censys.env christophetd/cloudflair myvulnerable.sit
 
 ## Compatibility
 
-Tested on Python 2.7 and 3.5. Feel free to [open an issue](https://github.com/christophetd/cloudflair/issues/new) if you have bug reports or questions.
+Tested on 3.6. Feel free to [open an issue](https://github.com/christophetd/cloudflair/issues/new) if you have bug reports or questions.
