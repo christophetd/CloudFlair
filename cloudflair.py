@@ -43,7 +43,7 @@ def find_hosts(domain, censys_api_id, censys_api_secret):
     cert_fingerprints = censys_search.get_certificates(domain, censys_api_id, censys_api_secret)
     print('[*] %d certificates matching "%s" found.' % (len(cert_fingerprints), domain) )
 
-    if len(cert_fingerprints) is 0:
+    if len(cert_fingerprints) == 0:
         print('Exiting.')
         exit(0)
 
@@ -52,7 +52,7 @@ def find_hosts(domain, censys_api_id, censys_api_secret):
     hosts = filter_cloudflare_ips(hosts)
     print('[*] %d IPv4 hosts presenting a certificate issued to "%s" were found.' % (len(hosts), domain))
 
-    if len(hosts) is 0:
+    if len(hosts) == 0:
         print('[-] The target is most likely not vulnerable.')
         exit(0)
 
@@ -154,7 +154,7 @@ def main(domain, output_file, censys_api_id, censys_api_secret):
     print_hosts(hosts)
     origins = find_origins(domain, hosts)
 
-    if len(origins) is 0:
+    if len(origins) == 0:
         print('[-] Did not find any origin server.')
         exit(0)
 
