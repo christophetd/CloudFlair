@@ -70,6 +70,8 @@ $ git clone https://github.com/christophetd/cloudflair.git
 
 ```
 $ cd cloudflair
+$ python3 -m venv venv
+$ source venv/bin/activate
 $ pip install -r requirements.txt
 ```
 
@@ -126,4 +128,4 @@ $ docker run --rm --env-file=censys.env christophetd/cloudflair myvulnerable.sit
 
 ## Compatibility
 
-Tested on Python 2.7 and 3.5. Feel free to [open an issue](https://github.com/christophetd/cloudflair/issues/new) if you have bug reports or questions.
+Tested on Python 3.5+. Feel free to [open an issue](https://github.com/christophetd/cloudflair/issues/new) if you have bug reports or questions.
