@@ -5,7 +5,7 @@ from censys.common.exceptions import (
     CensysRateLimitExceededException,
     CensysUnauthorizedException,
 )
-from censys.search import CensysCertificates, CensysIPv4
+from censys.search import CensysCertificates, CensysHosts
 
 USER_AGENT = (
     f"censys/{__version__} (CloudFlair; +https://github.com/christophetd/CloudFlair)"
@@ -39,14 +39,13 @@ def get_certificates(domain, api_id, api_secret):
 
 def get_hosts(cert_fingerprints, api_id, api_secret):
     try:
-        censys_hosts = CensysIPv4(
+        censys_hosts = CensysHosts(
             api_id=api_id, api_secret=api_secret, user_agent=USER_AGENT
         )
-        hosts_query = " OR ".join(cert_fingerprints)
-
-        hosts_search_results = censys_hosts.search(hosts_query)
+        hosts_query = f"services.tls.certificates.leaf_data.fingerprint: {{{','.join(cert_fingerprints)}}}"
+        hosts_search_results = censys_hosts.search(hosts_query).view_all()
         return set(
-            [host_search_result["ip"] for host_search_result in hosts_search_results]
+            [r["ip"] for r in hosts_search_results.values()]
         )
     except CensysUnauthorizedException:
         sys.stderr.write(INVALID_CREDS)
