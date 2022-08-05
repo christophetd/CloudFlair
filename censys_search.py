@@ -8,7 +8,7 @@ from censys.common.exceptions import (
 from censys.search import CensysCertificates, CensysHosts
 
 USER_AGENT = (
-    f"censys/{__version__} (CloudFlair; +https://github.com/christophetd/CloudFlair)"
+    f"censys-python/{__version__} (CloudFlair; +https://github.com/christophetd/CloudFlair)"
 )
 INVALID_CREDS = "[-] Your Censys credentials look invalid.\n"
 RATE_LIMIT = "[-] Looks like you exceeded your Censys account limits rate. Exiting\n"
