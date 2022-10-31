@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import dns_utils
-import cloudflare_utils
+import cloudflare_utils, cloudfront_utils
 import os
 import sys
 import censys_search
@@ -28,16 +28,33 @@ def get_user_agent():
     
     return random.choice(user_agents)
 
-def find_hosts(domain, censys_api_id, censys_api_secret):
+# Removes any Cloudflare IPs from the given list
+def filter_cloudflare_ips(ips):
+    return [ ip for ip in ips if not cloudflare_utils.is_cloudflare_ip(ip) ]
+
+# Removes any Cloudfront IPs from the given list
+def filter_cloudfront_ips(ips):
+    return [ ip for ip in ips if not cloudfront_utils.is_cloudfront_ip(ip) ]
+
+
+def find_hosts(domain, censys_api_id, censys_api_secret, use_cloudfront):
     if not dns_utils.is_valid_domain(domain):
         sys.stderr.write('[-] The domain "%s" looks invalid.\n' % domain)
         exit(1)
 
-    if not cloudflare_utils.uses_cloudflare(domain):
-        print('[-] The domain "%s" does not seem to be behind CloudFlare.' % domain)
-        exit(0)
+    if not use_cloudfront:
+        if not cloudflare_utils.uses_cloudflare(domain):
+            print('[-] The domain "%s" does not seem to be behind CloudFlare.' % domain)
+            exit(0)
 
-    print('[*] The target appears to be behind CloudFlare.')
+        print('[*] The target appears to be behind CloudFlare.')
+
+    else: 
+        if not cloudfront_utils.uses_cloudfront(domain):
+            print('[-] The domain "%s" does not seem to be behind CloudFront.' % domain)
+            exit(0)
+
+        print('[*] The target appears to be behind CloudFront.')
 
     print('[*] Looking for certificates matching "%s" using Censys' % domain)
     cert_fingerprints = censys_search.get_certificates(domain, censys_api_id, censys_api_secret)
@@ -49,7 +66,8 @@ def find_hosts(domain, censys_api_id, censys_api_secret):
 
     print('[*] Looking for IPv4 hosts presenting these certificates...')
     hosts = censys_search.get_hosts(cert_fingerprints, censys_api_id, censys_api_secret)
-    hosts = filter_cloudflare_ips(hosts)
+
+    hosts = filter_cloudflare_ips(hosts) if not use_cloudfront else filter_cloudfront_ips(hosts)
     print('[*] %d IPv4 hosts presenting a certificate issued to "%s" were found.' % (len(hosts), domain))
 
     if len(hosts) == 0:
@@ -104,10 +122,6 @@ def save_origins_to_file(origins, output_file):
     except IOError as e:
         sys.stderr.write('[-] Unable to write to output file %s : %s\n' % (output_file, e))
 
-# Removes any Cloudflare IPs from the given list
-def filter_cloudflare_ips(ips):
-    return [ ip for ip in ips if not cloudflare_utils.is_cloudflare_ip(ip) ]
-
 def find_origins(domain, candidates):
     print('\n[*] Testing candidate origin servers')
     original_response = retrieve_original_page(domain)
@@ -149,8 +163,8 @@ def find_origins(domain, candidates):
     return origins
 
 
-def main(domain, output_file, censys_api_id, censys_api_secret):
-    hosts = find_hosts(domain, censys_api_id, censys_api_secret)
+def main(domain, output_file, censys_api_id, censys_api_secret, use_cloudfront):
+    hosts = find_hosts(domain, censys_api_id, censys_api_secret, use_cloudfront)
     print_hosts(hosts)
     origins = find_origins(domain, hosts)
 
@@ -180,5 +194,5 @@ if __name__ == "__main__":
     if None in [ censys_api_id, censys_api_secret ]:
         sys.stderr.write('[!] Please set your Censys API ID and secret from your environment (CENSYS_API_ID and CENSYS_API_SECRET) or from the command line.\n')
         exit(1)
-
-    main(args.domain, args.output_file, censys_api_id, censys_api_secret)
+    
+    main(args.domain, args.output_file, censys_api_id, censys_api_secret, args.use_cloudfront)
