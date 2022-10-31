@@ -81,7 +81,7 @@ $ python cloudflair.py myvulnerable.site
 
 or for CloudFront 
 ```bash
-$ python cloudflair.py myvulnerable.site --use-cloudfront
+$ python cloudflair.py myvulnerable.site --cloudfront
 ```
 
 ## Usage
