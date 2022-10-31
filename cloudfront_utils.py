@@ -34,17 +34,15 @@ def get_cloudfront_ip_ranges():
 
     return ip_ranges
 
-
-cloudfront_ip_ranges = get_cloudfront_ip_ranges()
-
-if sys.version_info[0] == 2:
-    cloudfront_subnets = [ipaddress.ip_network(ip_range.decode('utf-8')) for ip_range in cloudfront_ip_ranges]
-else:
-    cloudfront_subnets = [ipaddress.ip_network(ip_range) for ip_range in cloudfront_ip_ranges]
-
-
 def is_cloudfront_ip(ip):
-    for cloudfront_subnet in cloudfront_subnets:
+    if getattr(is_cloudfront_ip, 'cloudfront_subnets', None) is None:
+        cloudfront_ip_ranges = get_cloudfront_ip_ranges()
+        if sys.version_info[0] == 2:
+            is_cloudfront_ip.cloudfront_subnets = [ipaddress.ip_network(ip_range.decode('utf-8')) for ip_range in cloudfront_ip_ranges]
+        else:
+            is_cloudfront_ip.cloudfront_subnets = [ipaddress.ip_network(ip_range) for ip_range in cloudfront_ip_ranges]
+
+    for cloudfront_subnet in is_cloudfront_ip.cloudfront_subnets:
         if cloudfront_subnet.overlaps(ipaddress.ip_network(ip)):
             return True
     return False
