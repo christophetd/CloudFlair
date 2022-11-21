@@ -1,6 +1,6 @@
 # CloudFlair
 
-CloudFlair is a tool to find origin servers of websites protected by CloudFlare who are publicly exposed and don't restrict network access to the CloudFlare IP ranges as they should.
+CloudFlair is a tool to find origin servers of websites protected by CloudFlare (or CloudFront) which are publicly exposed and don't appropriately restrict network access to the relevant CDN IP ranges.
 
 The tool uses Internet-wide scan data from [Censys](https://censys.io) to find exposed IPv4 hosts presenting an SSL certificate associated with the target's domain name. API keys are required and can be retrieved from your [Censys account](https://search.censys.io/account/api).
 
@@ -79,29 +79,31 @@ $ pip install -r requirements.txt
 $ python cloudflair.py myvulnerable.site
 ```
 
+or for CloudFront 
+```bash
+$ python cloudflair.py myvulnerable.site --cloudfront
+```
+
 ## Usage
 
 ```bash
 $ python cloudflair.py --help
 
-usage: cloudflair.py [-h] [-o OUTPUT_FILE] [--censys-api-id CENSYS_API_ID]
-                     [--censys-api-secret CENSYS_API_SECRET]
-                     domain
+usage: cloudflair.py [-h] [-o OUTPUT_FILE] [--censys-api-id CENSYS_API_ID] [--censys-api-secret CENSYS_API_SECRET] [--cloudfront USE_CLOUDFRONT] domain
 
 positional arguments:
   domain                The domain to scan
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -o OUTPUT_FILE, --output OUTPUT_FILE
-                        A file to output likely origin servers to (default:
-                        None)
+      A file to output likely origin servers to (default: None)
   --censys-api-id CENSYS_API_ID
-                        Censys API ID. Can also be defined using the
-                        CENSYS_API_ID environment variable (default: None)
+      Censys API ID. Can also be defined using the CENSYS_API_ID environment variable (default: None)
   --censys-api-secret CENSYS_API_SECRET
-                        Censys API secret. Can also be defined using the
-                        CENSYS_API_SECRET environment variable (default: None)
+      Censys API secret. Can also be defined using the CENSYS_API_SECRET environment variable (default: None)
+  --cloudfront USE_CLOUDFRONT
+      Check Cloudfront instead of CloudFlare. (default: False)
 ```
 
 ## Docker image
