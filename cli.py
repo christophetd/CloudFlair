@@ -29,6 +29,6 @@ parser.add_argument(
     '--cloudfront',
     help = 'Check Cloudfront instead of CloudFlare.',
     dest = 'use_cloudfront',
-    action=argparse.BooleanOptionalAction,
+    action='store_true',
     default=False
 )
