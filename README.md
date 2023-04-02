@@ -63,13 +63,13 @@ $ export CENSYS_API_SECRET=...
 3. Clone the repository
 
 ```bash
-$ git clone https://github.com/christophetd/cloudflair.git
+$ git clone https://github.com/christophetd/CloudFlair.git
 ```
 
 4. Install the dependencies
 
 ```bash
-$ cd cloudflair
+$ cd CloudFlair
 $ pip install -r requirements.txt
 ```
 
