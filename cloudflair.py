@@ -18,6 +18,8 @@ config = {
     'response_similarity_threshold': 0.9
 }
 
+CERT_CHUNK_SIZE = 25
+
 
 # Returns a legitimate looking user-agent
 def get_user_agent():
@@ -68,16 +70,16 @@ def find_hosts(domain, censys_api_id, censys_api_secret, use_cloudfront):
         print('Exiting.')
         exit(0)
 
-    chunking = (cert_fingerprints_count > 25)
+    chunking = (cert_fingerprints_count > CERT_CHUNK_SIZE)
     if chunking:
-        print('[*] Splitting the list of certificates into chunks of 25.')
+        print(f'[*] Splitting the list of certificates into chunks of {CERT_CHUNK_SIZE}.')
 
     print('[*] Looking for IPv4 hosts presenting these certificates...')
     hosts = set()
-    for i in range(0, cert_fingerprints_count, 25):
+    for i in range(0, cert_fingerprints_count, CERT_CHUNK_SIZE):
         if chunking:
-            print('[*] Processing chunk %d/%d' % (i/25 + 1, cert_fingerprints_count/25))
-        hosts.update(censys_search.get_hosts(cert_fingerprints[i:i+25], censys_api_id, censys_api_secret))
+            print('[*] Processing chunk %d/%d' % (i/CERT_CHUNK_SIZE + 1, cert_fingerprints_count/CERT_CHUNK_SIZE))
+        hosts.update(censys_search.get_hosts(cert_fingerprints[i:i+CERT_CHUNK_SIZE], censys_api_id, censys_api_secret))
 
     hosts = filter_cloudflare_ips(hosts) if not use_cloudfront else filter_cloudfront_ips(hosts)
     print('[*] %d IPv4 hosts presenting a certificate issued to "%s" were found.' % (len(hosts), domain))
