@@ -1,34 +1,34 @@
 import sys
 
-from censys.common import __version__
 from censys.common.exceptions import (
     CensysRateLimitExceededException,
     CensysUnauthorizedException,
 )
-from censys.search import CensysCertificates, CensysHosts
+from censys.search import CensysCerts, CensysHosts
 
 USER_AGENT = (
-    f"censys-python/{__version__} (CloudFlair; +https://github.com/christophetd/CloudFlair)"
+    f"{CensysCerts.DEFAULT_USER_AGENT} (CloudFlair; +https://github.com/christophetd/CloudFlair)"
 )
 INVALID_CREDS = "[-] Your Censys credentials look invalid.\n"
 RATE_LIMIT = "[-] Looks like you exceeded your Censys account limits rate. Exiting\n"
 
 
-def get_certificates(domain, api_id, api_secret):
+def get_certificates(domain, api_id, api_secret, pages=2) -> set:
     try:
-        censys_certificates = CensysCertificates(
+        censys_certificates = CensysCerts(
             api_id=api_id, api_secret=api_secret, user_agent=USER_AGENT
         )
 
-        requested_fields = ["parsed.names", "parsed.fingerprint_sha256"]
-
-        certificate_query = f"parsed.names: {domain} AND tags.raw: trusted AND NOT parsed.names: cloudflaressl.com"
+        certificate_query = f"names: {domain} and parsed.signature.valid: true and not names: cloudflaressl.com"
         certificates_search_results = censys_certificates.search(
-            certificate_query, fields=requested_fields
+            certificate_query, per_page=100, pages=pages
         )
-        return set(
-            [cert["parsed.fingerprint_sha256"] for cert in certificates_search_results]
-        )
+
+        fingerprints = set()
+        for page in certificates_search_results:
+            for cert in page:
+                fingerprints.add(cert["fingerprint_sha256"])
+        return fingerprints
     except CensysUnauthorizedException:
         sys.stderr.write(INVALID_CREDS)
         exit(1)
