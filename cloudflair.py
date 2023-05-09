@@ -18,6 +18,9 @@ config = {
     'response_similarity_threshold': 0.9
 }
 
+CERT_CHUNK_SIZE = 25
+
+
 # Returns a legitimate looking user-agent
 def get_user_agent():
     user_agents = [
@@ -25,12 +28,13 @@ def get_user_agent():
         "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36",
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36"
     ]
-    
     return random.choice(user_agents)
+
 
 # Removes any Cloudflare IPs from the given list
 def filter_cloudflare_ips(ips):
     return [ ip for ip in ips if not cloudflare_utils.is_cloudflare_ip(ip) ]
+
 
 # Removes any Cloudfront IPs from the given list
 def filter_cloudfront_ips(ips):
@@ -58,14 +62,24 @@ def find_hosts(domain, censys_api_id, censys_api_secret, use_cloudfront):
 
     print('[*] Looking for certificates matching "%s" using Censys' % domain)
     cert_fingerprints = censys_search.get_certificates(domain, censys_api_id, censys_api_secret)
-    print('[*] %d certificates matching "%s" found.' % (len(cert_fingerprints), domain) )
+    cert_fingerprints = list(cert_fingerprints)
+    cert_fingerprints_count = len(cert_fingerprints)
+    print('[*] %d certificates matching "%s" found.' % (cert_fingerprints_count, domain))
 
-    if len(cert_fingerprints) == 0:
+    if cert_fingerprints_count == 0:
         print('Exiting.')
         exit(0)
 
+    chunking = (cert_fingerprints_count > CERT_CHUNK_SIZE)
+    if chunking:
+        print(f'[*] Splitting the list of certificates into chunks of {CERT_CHUNK_SIZE}.')
+
     print('[*] Looking for IPv4 hosts presenting these certificates...')
-    hosts = censys_search.get_hosts(cert_fingerprints, censys_api_id, censys_api_secret)
+    hosts = set()
+    for i in range(0, cert_fingerprints_count, CERT_CHUNK_SIZE):
+        if chunking:
+            print('[*] Processing chunk %d/%d' % (i/CERT_CHUNK_SIZE + 1, cert_fingerprints_count/CERT_CHUNK_SIZE))
+        hosts.update(censys_search.get_hosts(cert_fingerprints[i:i+CERT_CHUNK_SIZE], censys_api_id, censys_api_secret))
 
     hosts = filter_cloudflare_ips(hosts) if not use_cloudfront else filter_cloudfront_ips(hosts)
     print('[*] %d IPv4 hosts presenting a certificate issued to "%s" were found.' % (len(hosts), domain))
@@ -75,6 +89,7 @@ def find_hosts(domain, censys_api_id, censys_api_secret, use_cloudfront):
         exit(0)
 
     return set(hosts)
+
 
 def print_hosts(hosts):
     for host in hosts:
@@ -91,7 +106,7 @@ def retrieve_original_page(domain):
     except requests.exceptions.Timeout:
         sys.stderr.write('[-] %s timed out after %d seconds.\n' % (url, config['http_timeout_seconds']))
         exit(1)
-    except requests.exceptions.RequestException as e:
+    except requests.exceptions.RequestException:
         sys.stderr.write('[-] Failed to retrieve %s\n' % url)
         exit(1)
 
