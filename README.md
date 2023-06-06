@@ -66,22 +66,24 @@ $ export CENSYS_API_SECRET=...
 $ git clone https://github.com/christophetd/CloudFlair.git
 ```
 
-4. Install the dependencies
+4. Create a virtual env and install the dependencies
 
 ```bash
-$ cd CloudFlair
-$ pip install -r requirements.txt
+cd CloudFlair
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 ```
 
 5. Run CloudFlair (see [Usage](#usage) below for more detail)
 
 ```bash
-$ python cloudflair.py myvulnerable.site
+python cloudflair.py myvulnerable.site
 ```
 
 or for CloudFront 
 ```bash
-$ python cloudflair.py myvulnerable.site --cloudfront
+python cloudflair.py myvulnerable.site --cloudfront
 ```
 
 ## Usage
@@ -89,7 +91,7 @@ $ python cloudflair.py myvulnerable.site --cloudfront
 ```bash
 $ python cloudflair.py --help
 
-usage: cloudflair.py [-h] [-o OUTPUT_FILE] [--censys-api-id CENSYS_API_ID] [--censys-api-secret CENSYS_API_SECRET] [--cloudfront USE_CLOUDFRONT] domain
+usage: cloudflair.py [-h] [-o OUTPUT_FILE] [--censys-api-id CENSYS_API_ID] [--censys-api-secret CENSYS_API_SECRET] [--cloudfront] domain
 
 positional arguments:
   domain                The domain to scan
@@ -97,19 +99,15 @@ positional arguments:
 options:
   -h, --help            show this help message and exit
   -o OUTPUT_FILE, --output OUTPUT_FILE
-      A file to output likely origin servers to (default: None)
+                        A file to output likely origin servers to (default: None)
   --censys-api-id CENSYS_API_ID
-      Censys API ID. Can also be defined using the CENSYS_API_ID environment variable (default: None)
+                        Censys API ID. Can also be defined using the CENSYS_API_ID environment variable (default: None)
   --censys-api-secret CENSYS_API_SECRET
-      Censys API secret. Can also be defined using the CENSYS_API_SECRET environment variable (default: None)
-  --cloudfront USE_CLOUDFRONT
-      Check Cloudfront instead of CloudFlare. (default: False)
+                        Censys API secret. Can also be defined using the CENSYS_API_SECRET environment variable (default: None)
+  --cloudfront          Check Cloudfront instead of CloudFlare. (default: False)
 ```
 
 ## Docker image
-
-![MicroBadger Size](https://img.shields.io/microbadger/image-size/christophetd/cloudflair)
-![MicroBadger Layers](https://img.shields.io/microbadger/layers/christophetd/cloudflair)
 
 A lightweight Docker image of CloudFlair ([`christophetd/cloudflair`](https://hub.docker.com/r/christophetd/cloudflair/)) is provided. A scan can easily be instantiated using the following command.
 
@@ -129,4 +127,4 @@ $ docker run --rm --env-file=censys.env christophetd/cloudflair myvulnerable.sit
 
 ## Compatibility
 
-Tested on 3.6. Feel free to [open an issue](https://github.com/christophetd/cloudflair/issues/new) if you have bug reports or questions.
+Tested on Python 3.6. Feel free to [open an issue](https://github.com/christophetd/cloudflair/issues/new) if you have bug reports or questions.
