@@ -2,5 +2,5 @@ dnspython==1.15.0
 censys==2.2.0
 requests==2.31.0
 html-similarity==0.3.2
-urllib3==1.26.5
+urllib3==1.26.17
 ipaddress==1.0.19
