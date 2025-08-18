@@ -1,4 +1,4 @@
-dnspython==1.15.0
+dnspython==2.6.1
 censys==2.2.0
 requests==2.31.0
 html-similarity==0.3.2
